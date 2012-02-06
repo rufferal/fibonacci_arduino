@@ -1,8 +1,8 @@
-In this setup I have a NOR transistor logic gate hooked up to the Arduino.
+In this setup I have a NOR transistor logic gate hooked up to an Arduino Uno.
 As NOR is a universal gate, every other logical operation can be performed
 through recursive calls to NOR.
 
-Here I have an adder for 32-bit unsigned integers, which is used to calculate
+This program contains an adder for 32-bit unsigned integers, which is used to calculate
 the first 48 terms of the Fibonacci Sequence.
 
 Output:

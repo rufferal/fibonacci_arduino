@@ -5,7 +5,7 @@ const byte inPin = A0;
 
 unsigned long ADD(unsigned long a, unsigned long b) {
   unsigned long total = 0, s;
-  byte abit, bbit, axb, bitcount = 0, cin = 0; // cin = carry bit
+  byte abit, bbit, bitcount = 0, cin = 0; // cin = carry bit
   
   // In an ALU, this loop is parallelized with rows of full adders built from transistors
   while (OR(OR(a,b),cin)) { // ( a || b || cin
