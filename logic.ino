@@ -1,7 +1,9 @@
-//If you change these, change the bitmasks in NOR function
+// If you change these, change the bitmasks in NOR function
 const byte pinA = 7;
 const byte pinB = 6;
-const byte inPin = A0;
+// Two physical gates are hooked up to these pins, NOR and AND
+const byte norPin = A0;
+const byte andPin = A1;
 
 unsigned long ADD(unsigned long a, unsigned long b) {
   unsigned long total = 0, s;
@@ -30,32 +32,7 @@ unsigned long ADD(unsigned long a, unsigned long b) {
   return total;
 }
 
-// These all decompose to a series of NOR calls -->
-byte NAND(byte a, byte b) {
-  return NOT(AND(a,b));
-}
-
-byte NOT(byte a) {
-  return NOR(a,a);
-}
-
-byte OR(byte a, byte b) {
-  return NOT(NOR(a,b));
-}
-
-byte XOR(byte a, byte b) {
-  return NOR(AND(a,b),NOR(a,b));
-}
-
-byte XNOR(byte a, byte b) {
-  return OR(AND(a,b),NOR(a,b));
-}
-
-byte AND(byte a, byte b) {
-  return NOR(NOT(a),NOT(b));
-} // <--
-
-byte NOR(byte a, byte b) {
+static void writeLogic(byte a, byte b) {
   const byte pin7 = 128, pin6 = 64; // (highest bits)
   
   // Using PORTD instead of digitalWrite cuts execution time by 60%
@@ -76,7 +53,40 @@ byte NOR(byte a, byte b) {
     PORTD &= ~pin6;
   }
   
-  return digitalRead(inPin);
+}
+
+// These all decompose to a series of NOR/AND calls -->
+byte NAND(byte a, byte b) {
+  return NOT(AND(a,b));
+}
+
+byte NOT(byte a) {
+  return NOR(a,a);
+}
+
+byte OR(byte a, byte b) {
+  return NOT(NOR(a,b));
+}
+
+byte XOR(byte a, byte b) {
+  writeLogic(a,b);
+  return NOR(digitalRead(andPin),digitalRead(norPin));
+}
+
+byte XNOR(byte a, byte b) {
+  return NOT(XOR(a,b));
+} // <--
+
+byte AND(byte a, byte b) {
+  writeLogic(a,b);
+  return digitalRead(andPin);
+  
+  //return NOR(NOT(a),NOT(b));
+}
+
+byte NOR(byte a, byte b) {
+  writeLogic(a,b);
+  return digitalRead(norPin);
 }
 
 void setup() {
@@ -85,7 +95,7 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
+void loop() {  
   unsigned long a, b;
   byte term;
   
